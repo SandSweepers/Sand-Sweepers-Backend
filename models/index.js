@@ -1,4 +1,3 @@
-const session = require("express-session");
 const dbConfig = require("../config/config.js");
 const Sequelize = require("sequelize");
 
