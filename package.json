@@ -1,0 +1,29 @@
+{
+  "name": "sand-sweepers-backend",
+  "version": "1.0.0",
+  "description": "Backend of the app",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SandSweepers/Sand-Sweepers-Backend.git"
+  },
+  "author": "Max, Madiou, Alice, Yamiley",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SandSweepers/Sand-Sweepers-Backend/issues"
+  },
+  "homepage": "https://github.com/SandSweepers/Sand-Sweepers-Backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-cors": "^0.0.3",
+    "mysql2": "^3.14.0",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.2"
+  }
+}
+  
