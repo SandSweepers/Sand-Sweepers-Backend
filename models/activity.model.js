@@ -26,18 +26,6 @@ const Activity = sequelize.define('Activity', {
   }
 });
 
-// Fonction d'initialisation
-async function initializeDatabase() {
-  try {
-    await sequelize.sync({ force: true });
-    console.log('Database synchronized');
-    return Activity; // Ici le return est au bon endroit
-  } catch (error) {
-    console.error('Database sync failed:', error);
-    throw error;
-  }
-}
-
 // Exportation
 module.exports = {
   Activity,

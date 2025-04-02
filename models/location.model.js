@@ -20,17 +20,6 @@ const Location = sequelize.define('Location', {
     allowNull: false,
   }
 });
-// Fonction d'initialisation
-async function initializeDatabase() {
-  try {
-    await sequelize.sync({ force: true });
-    console.log('Database synchronized');
-    return Location; // Ici le return est au bon endroit
-  } catch (error) {
-    console.error('Database sync failed:', error);
-    throw error;
-  }
-}
 // Exportation
 module.exports = {
   Location,
