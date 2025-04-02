@@ -1,43 +1,46 @@
-'use strict';
+const dbConfig = require("../config/config.js");
+const Sequelize = require("sequelize");
+const { Op } = require("sequelize");
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
 let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+
+try {
+  sequelize = new Sequelize(
+    dbConfig.database,
+    dbConfig.username,
+    dbConfig.password,
+    {
+      host: dbConfig.host,
+      dialect: dbConfig.dialect,
+      port: dbConfig.port,
+      logging: dbConfig.logging
+    }
+  );
+
+  console.log("Database connection established successfully.");
+} catch (error) {
+  console.error("Error: Sequelize failed to initialize:", error.message);
+  process.exit(1);
 }
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+db.Op = Op;
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
+db.user = require("./user.model.js")(sequelize, Sequelize);
+db.friendList = require("./friendList.model.js")(sequelize, Sequelize);
+
+db.user.hasOne(db.friendList, {
+  foreignKey: "userId",
+  sourceKey: "id",
+  onDelete: "CASCADE",
 });
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+db.friendList.belongsTo(db.user, {
+  foreignKey: "userId",
+  targetKey: "id",
+});
 
 module.exports = db;
