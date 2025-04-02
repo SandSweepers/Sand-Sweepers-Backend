@@ -23,5 +23,4 @@ const Location = sequelize.define('Location', {
 // Exportation
 module.exports = {
   Location,
-  initializeDatabase
 };  

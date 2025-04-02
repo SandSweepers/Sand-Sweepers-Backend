@@ -29,5 +29,4 @@ const Activity = sequelize.define('Activity', {
 // Exportation
 module.exports = {
   Activity,
-  initializeDatabase
 };
