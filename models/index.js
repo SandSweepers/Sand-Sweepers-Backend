@@ -31,7 +31,10 @@ db.Op = Op;
 
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.friendList = require("./friendList.model.js")(sequelize, Sequelize);
+db.location = require("./location.model.js")(sequelize, Sequelize);
+db.activity = require("./activity.model.js")(sequelize, Sequelize);
 db.prizes = require("./prizes.model.js")(sequelize, Sequelize);
+
 
 db.user.hasOne(db.friendList, {
   foreignKey: "userId",
