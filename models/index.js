@@ -33,6 +33,8 @@ db.user = require("./user.model.js")(sequelize, Sequelize);
 db.friendList = require("./friendList.model.js")(sequelize, Sequelize);
 db.location = require("./location.model.js")(sequelize, Sequelize);
 db.activity = require("./activity.model.js")(sequelize, Sequelize);
+db.prizes = require("./prizes.model.js")(sequelize, Sequelize);
+
 
 db.user.hasOne(db.friendList, {
   foreignKey: "userId",
@@ -44,6 +46,7 @@ db.friendList.belongsTo(db.user, {
   foreignKey: "userId",
   targetKey: "id",
 });
+
 
 db.user.belongsToMany(db.location, {
   through: "UserLocations", // Table intermédiaire
@@ -79,6 +82,17 @@ db.user.belongsToMany(db.activity, {
 db.activity.belongsToMany(db.user, {
   through: "UserActivities", // Table intermédiaire
   foreignKey: "activityId",
+
+db.user.belongsToMany(db.prizes, {
+  through: "user_prizes", 
+  foreignKey: "userId",
+  otherKey: "prizeId",
+});
+
+db.prizes.belongsToMany(db.user, {
+  through: "user_prizes", 
+  foreignKey: "prizeId",
+
   otherKey: "userId",
 });
 
