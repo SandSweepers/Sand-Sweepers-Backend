@@ -2,12 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
+const session = require("express-session");
 const http = require("http");
-const fs = require('fs');
+const WebSocket = require("ws");
 const path = require('path');
-
 const db = require("./models/index.js");
-
 const app = express();
 
 const corsOptions = {
@@ -22,41 +22,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.set("view engine", "ejs");
-app.use(express.static(path.join(__dirname, "public")));
-
-const uploadsDir = path.resolve(__dirname, 'public/uploads');
-
-const clearUploadsFolder = () => {
-  if (fs.existsSync(uploadsDir)) {
-    try {
-      const files = fs.readdirSync(uploadsDir);
-      for (const file of files) {
-        const filePath = path.join(uploadsDir, file);
-        fs.unlinkSync(filePath);
-      }
-    } catch (err) {
-      console.error('Error deleting files from uploads:', err);
-    }
-  }
-};
-
-process.on('SIGINT', async () => {
-  console.log('\nShutting down server... Cleaning up uploads folder.');
-  clearUploadsFolder();
-  setTimeout(() => process.exit(), 1000);
-});
-
-process.on('SIGTERM', async () => {
-  console.log('\nServer is shutting down... Cleaning up uploads folder.');
-  clearUploadsFolder();
-  setTimeout(() => process.exit(), 1000);
-});
-
 app.use((req, res, next) => {
   let token = req.headers["authorization"];
 
   if (!token) return next();
+
+  if (!req.body) {
+    req.body = {};
+  }
 
   if (token.startsWith("Basic ")) {
     const base64Credentials = token.split(" ")[1];
@@ -82,17 +55,56 @@ app.use((req, res, next) => {
   });
 });
 
+const routes = [
+  "user",
+];
+
+routes.forEach((route) => require(`./routes/${route}.routes.js`)(app));
+
+async function runSeeders() {
+  const seeders = [
+    require("./seeders/20250404073103-user.js")
+  ];
+
+  for (const seeder of seeders) {
+    await seeder.up(db.sequelize.getQueryInterface(), db.Sequelize);
+  }
+}
+
 const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+wss.on("connection", (ws) => {
+  ws.send(JSON.stringify({ message: "Welcome to the WebSocket server." }));
+
+  ws.on("message", (message) => {
+
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  });
+
+  ws.on("close", () => console.log("Client disconnected."));
+  ws.on("error", (error) => console.error("WebSocket error:", error));
+});
+
+app.set("wss", wss);
 
 db.sequelize
   .sync({ force: true })
   .then(async () => {
+
     console.log("Database synced: tables dropped and recreated.");
+    await runSeeders();
+
     const PORT = process.env.HOST_PORT || 8080;
     server.listen(PORT, () => {
-      console.log(`Server Working on ${PORT}.`);
+      console.log(`Server running on port ${PORT}.`);
+      console.log(`WebSocket server running on port ${PORT}.`);
     });
   })
   .catch((error) => {
-    console.error("DB failed to initiate:", error);
+    console.error("Error syncing the database:", error);
   });
