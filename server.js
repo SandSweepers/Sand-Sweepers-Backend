@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const session = require("express-session");
 const http = require("http");
 const WebSocket = require("ws");
-const fs = require('fs');
 const path = require('path');
 const db = require("./models/index.js");
 const app = express();
@@ -62,6 +61,16 @@ const routes = [
 
 routes.forEach((route) => require(`./routes/${route}.routes.js`)(app));
 
+async function runSeeders() {
+  const seeders = [
+    require("./seeders/20250404073103-user.js")
+  ];
+
+  for (const seeder of seeders) {
+    await seeder.up(db.sequelize.getQueryInterface(), db.Sequelize);
+  }
+}
+
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
@@ -86,7 +95,9 @@ app.set("wss", wss);
 db.sequelize
   .sync({ force: true })
   .then(async () => {
+
     console.log("Database synced: tables dropped and recreated.");
+    await runSeeders();
 
     const PORT = process.env.HOST_PORT || 8080;
     server.listen(PORT, () => {
