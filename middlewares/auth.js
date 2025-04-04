@@ -7,14 +7,14 @@ const User = db.user;
 
 const validateSigninInput = (user, pwd) => {
   if (!user || !pwd) {
-    throw new Error("Los campos no pueden estar vacíos.");
+    throw new Error("Fields cannot be empty.");
   }
 };
 
 const authenticateUser = async (user, pwd) => {
   const data = await User.findOne({ where: { username: user } });
   if (!data || !bcrypt.compareSync(pwd, data.password)) {
-    throw new Error("Correo o contraseña inválido.");
+    throw new Error("Invalid email or password.");
   }
   return data;
 };
@@ -49,7 +49,7 @@ const verifyToken = (token) => {
 const findUserById = async (id) => {
   const user = await User.findByPk(id);
   if (!user) {
-    throw new Error("user not found.");
+    throw new Error("User not found.");
   }
   return user;
 };
@@ -70,7 +70,7 @@ exports.isAuthenticated = async (req, res, next) => {
 
     next();
   } catch (err) {
-    const status = err.message === "Unathorized." ? 500 : 401;
+    const status = err.message === "Unauthorized." ? 500 : 401;
     res.status(status).json({ error: true, message: err.message });
   }
 };
