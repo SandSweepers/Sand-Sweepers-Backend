@@ -33,7 +33,7 @@ db.user = require("./user.model.js")(sequelize, Sequelize);
 db.friendList = require("./friend.model.js")(sequelize, Sequelize);
 db.location = require("./location.model.js")(sequelize, Sequelize);
 db.activity = require("./activity.model.js")(sequelize, Sequelize);
-db.prizes = require("./prize.model.js")(sequelize, Sequelize);
+db.prizes = require("./achievement.model.js")(sequelize, Sequelize);
 
 
 db.user.hasOne(db.friendList, {

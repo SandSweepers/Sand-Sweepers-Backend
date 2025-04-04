@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
-    const prizes = sequelize.define("prizes", {
+    const prizes = sequelize.define("achievement", {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -12,5 +12,5 @@ module.exports = (sequelize) => {
         },
     });
 
-    return prizes;
+    return achievement;
 };
