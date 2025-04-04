@@ -3,10 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
-const session = require("express-session");
 const http = require("http");
 const WebSocket = require("ws");
-const path = require('path');
 const db = require("./models/index.js");
 const app = express();
 
@@ -28,6 +26,7 @@ app.use((req, res, next) => {
   if (!token) return next();
 
   if (!req.body) {
+  
     req.body = {};
   }
 

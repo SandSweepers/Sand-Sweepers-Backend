@@ -95,9 +95,9 @@ exports.promoteToAdmin = async (req, res) => {
   const currentUser = req.user;  
 
 
-  // if (currentUser.role !== "ADMIN") {
-  //   return res.status(403).json({ message: "You do not have permission to perform this action." });
-  // }
+  if (currentUser.role !== "ADMIN") {
+    return res.status(403).json({ message: "You do not have permission to perform this action." });
+  }
 
   try {
     
